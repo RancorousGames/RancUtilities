@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Rancorous Utilities",
+	"Description": "General unreal engine utilities",
+	"Category": "Utility",
+	"CreatedBy": "Rancorous Games",
+	"CreatedByURL": "https://twitter.com/RancorousGames",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RancUtilities",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
