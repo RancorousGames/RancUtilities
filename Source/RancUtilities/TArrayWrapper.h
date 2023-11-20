@@ -1,11 +1,5 @@
 ﻿#pragma once
 
-
-class RANCUTILITIES_API ARAIController : public AActor
-{
-	
-};
-
 /**
  * TArrayWrapper is a utility wrapper around Unreal's TArray.
  * 
