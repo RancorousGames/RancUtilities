@@ -10,7 +10,7 @@ void URancUtilityLibrary::ForceDestroyComponent(UActorComponent* Component)
 }
 
 void URancUtilityLibrary::ThrottledLog(const FString& Message, float ThrottlePeriod,
-	const FString& Key)
+                                       const FString& Key)
 {
 	if (ThrottlePeriod <= 0.0f)
 	{
@@ -33,4 +33,58 @@ void URancUtilityLibrary::ThrottledLog(const FString& Message, float ThrottlePer
 	{
 		ThrottlePeriodRef -= CurrentTime - LastLogTime;
 	}
+}
+
+FVector URancUtilityLibrary::GetLocationInFrontOfActor(AActor* Actor, float Distance)
+{
+	if (!Actor)
+	{
+		return FVector::ZeroVector;
+	}
+
+	// Get the actor's forward vector
+	const FVector ForwardVector = Actor->GetActorForwardVector();
+
+	// Scale the vector by the desired distance
+	const FVector ScaledVector = ForwardVector * Distance;
+
+	// Get the actor's current location
+	const FVector ActorLocation = Actor->GetActorLocation();
+
+	// Calculate the new location in front of the actor
+	const FVector NewLocation = ActorLocation + ScaledVector;
+
+	return NewLocation;
+}
+
+void URancUtilityLibrary::ToggleBool(bool& BoolToToggle, EBoolState& Branches)
+{
+	BoolToToggle = !BoolToToggle;
+
+	Branches = BoolToToggle ? EBoolState::WasFalse : EBoolState::WasTrue;
+}
+
+void URancUtilityLibrary::IncrementInt(int32& Value, const int32 MaxValue)
+{
+	++Value;
+}
+
+void URancUtilityLibrary::DecrementInt(int32& Value, const int32 MinValue)
+{
+	--Value;
+}
+
+FVector URancUtilityLibrary::AddScaledVector(FVector VectorA, FVector VectorB, float ScaleFactor)
+{
+	return VectorA + (VectorB * ScaleFactor);
+}
+
+void URancUtilityLibrary::BranchAnd(const bool A, const bool B, ETrueFalse& Branches)
+{
+	if (!A || !B)
+	{
+		Branches = ETrueFalse::IsFalse;
+		return;
+	}
+	Branches = ETrueFalse::IsTrue;
 }
