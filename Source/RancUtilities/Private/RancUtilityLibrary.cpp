@@ -78,13 +78,3 @@ FVector URancUtilityLibrary::AddScaledVector(FVector VectorA, FVector VectorB, f
 {
 	return VectorA + (VectorB * ScaleFactor);
 }
-
-void URancUtilityLibrary::BranchAnd(const bool A, const bool B, ETrueFalse& Branches)
-{
-	if (!A || !B)
-	{
-		Branches = ETrueFalse::IsFalse;
-		return;
-	}
-	Branches = ETrueFalse::IsTrue;
-}

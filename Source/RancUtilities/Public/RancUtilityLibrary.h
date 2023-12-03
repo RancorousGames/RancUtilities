@@ -9,13 +9,6 @@
 class UActorComponent;
 
 UENUM(BlueprintType)
-enum class ETrueFalse : uint8
-{
-	IsTrue UMETA(DisplayName = "True"),
-	IsFalse UMETA(DisplayName = "False")
-};
-
-UENUM(BlueprintType)
 enum class EBoolState : uint8
 {
 	WasTrue UMETA(DisplayName = "Was True"),
@@ -65,9 +58,6 @@ public:
 	/* * Adds to one vector the scaled value of another vector. */
 	UFUNCTION(BlueprintPure, Category = "Math")
 	static FVector AddScaledVector(FVector VectorA, FVector VectorB, float ScaleFactor);
-
-	UFUNCTION(BlueprintCallable, meta = (CompactNodeTitle = "And", DisplayName = "Branch And", ExpandEnumAsExecs = "Branches", CommutativeAssociativeBinaryOperator = "true", Category="Math|Boolean"))
-	static void BranchAnd(const bool A, const bool B, ETrueFalse& Branches);
 
 private:
 	// map that contains the last time a message was logged and the throttle period
