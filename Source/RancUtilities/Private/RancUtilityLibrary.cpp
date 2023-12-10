@@ -18,11 +18,11 @@ void URancUtilityLibrary::ThrottledLog(const FString& Message, float ThrottlePer
 		return;
 	}
 
-	TTuple<float, float>& ThrottleLogTuple = ThrottleLogMap.FindOrAdd(Key);
-	float& LastLogTime = ThrottleLogTuple.Get<0>();
+	TTuple<double, float>& ThrottleLogTuple = ThrottleLogMap.FindOrAdd(Key);
+	double& LastLogTime = ThrottleLogTuple.Get<0>();
 	float& ThrottlePeriodRef = ThrottleLogTuple.Get<1>();
 
-	const float CurrentTime = FPlatformTime::Seconds();
+	const double CurrentTime = FPlatformTime::Seconds();
 	if (CurrentTime - LastLogTime > ThrottlePeriodRef)
 	{
 		LastLogTime = CurrentTime;
@@ -32,6 +32,22 @@ void URancUtilityLibrary::ThrottledLog(const FString& Message, float ThrottlePer
 	else
 	{
 		ThrottlePeriodRef -= CurrentTime - LastLogTime;
+	}
+}
+
+void URancUtilityLibrary::ThrottledAction(float ThrottlePeriod, EThrottleActionState& Branches, const FString& Key)
+{
+	double& LastActionTime = ThrottleMap.FindOrAdd(Key);
+	const double CurrentTime = FPlatformTime::Seconds();
+
+	if (CurrentTime - LastActionTime > ThrottlePeriod)
+	{
+		LastActionTime = CurrentTime;
+		Branches = EThrottleActionState::Ready;
+	}
+	else
+	{
+		Branches = EThrottleActionState::Throttled;
 	}
 }
 
