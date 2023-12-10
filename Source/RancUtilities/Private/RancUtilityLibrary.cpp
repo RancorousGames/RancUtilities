@@ -1,4 +1,7 @@
-﻿#include "RancUtilityLibrary.h"
+﻿// Copyright Rancorous Games, 2023
+
+#include "RancUtilityLibrary.h"
+#include "GameFramework/Actor.h"
 #include "Components/ActorComponent.h"
 
 void URancUtilityLibrary::ForceDestroyComponent(UActorComponent* Component)

@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright Rancorous Games, 2023
 
 #pragma once
 

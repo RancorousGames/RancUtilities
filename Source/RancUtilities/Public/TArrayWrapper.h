@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright Rancorous Games, 2023
+
+#pragma once
 
 /**
  * TArrayWrapper is a utility wrapper around Unreal's TArray.

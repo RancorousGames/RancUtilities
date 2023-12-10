@@ -1,4 +1,6 @@
-﻿#include "RancSortingLibrary.h"
+﻿// Copyright Rancorous Games, 2023
+
+#include "RancSortingLibrary.h"
 
 #include "ISortableElement.h"
 

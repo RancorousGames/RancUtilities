@@ -1,4 +1,4 @@
-﻿// Inspired by https://forums.unrealengine.com/t/destroy-component-does-not-work/136428/5
+﻿// Copyright Rancorous Games, 2023
 
 #pragma once
 
