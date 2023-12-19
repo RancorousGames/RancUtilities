@@ -97,3 +97,24 @@ FVector URancUtilityLibrary::AddScaledVector(FVector VectorA, FVector VectorB, f
 {
 	return VectorA + (VectorB * ScaleFactor);
 }
+
+FVector URancUtilityLibrary::GetRandomWorldPlaneUnitVector()
+{
+	// Generate a random angle in radians
+	const float RandAngle = FMath::RandRange(0.0f, 2.0f * PI);
+
+	// Calculate the x and y components using cosine and sine
+	float X = FMath::Cos(RandAngle);
+	float Y = FMath::Sin(RandAngle);
+
+	// Return the unit vector
+	return FVector(X, Y, 0.0f);
+}
+
+FVector URancUtilityLibrary::GetPointOnCircleAroundTarget(const FVector& SourcePosition, const FVector& TargetPosition,
+	float Radius, float AngleDegrees)
+{
+	FVector Direction = (TargetPosition - SourcePosition).GetSafeNormal();
+	FVector RotatedDirection = Direction.RotateAngleAxis(AngleDegrees + 180, FVector::UpVector);
+	return TargetPosition + Radius * RotatedDirection;
+}

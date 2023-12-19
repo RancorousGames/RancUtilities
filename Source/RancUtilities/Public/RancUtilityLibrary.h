@@ -78,6 +78,29 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Math")
 	static FVector AddScaledVector(FVector VectorA, FVector VectorB, float ScaleFactor);
 
+	/* Gets a random 3D unit vector but with Z = 0. */
+	UFUNCTION(BlueprintPure, Category = "Math|Random")
+	static FVector GetRandomWorldPlaneUnitVector();
+	
+	/*
+	 * Calculates a point on a circle at a specific angle from the source to the target.
+	 * Useful for positioning around a central target point.
+	 *
+	 * @param SourcePosition The starting position for the angle calculation.
+	 * @param TargetPosition The center of the circle for the calculation.
+	 * @param Radius Radius of the circle from the target position.
+	 * @param AngleDegrees Angle in degrees for the calculation (0 degrees is direct line from source to target).
+	 * @return FVector The calculated point on the circle.
+	 *
+	 * Example:
+	 * // Calculate a position 45 degrees around an enemy, 50 units away
+	 * FVector PlayerPosition = FVector(100, 100, 0);
+	 * FVector EnemyPosition = FVector(200, 200, 0);
+	 * FVector NewPosition = GetPointOnCircleAroundTarget(PlayerPosition, EnemyPosition, 50.0f, 45.0f);
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Utility")
+	static FVector GetPointOnCircleAroundTarget(const FVector& SourcePosition, const FVector& TargetPosition, float Radius, float AngleDegrees);
+
 private:
 	// map that contains the last time a message was logged and the throttle period
 	inline static TMap<FString, TTuple<double, float>> ThrottleLogMap = {};
