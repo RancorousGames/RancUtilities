@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright Rancorous Games, 2024
+
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"

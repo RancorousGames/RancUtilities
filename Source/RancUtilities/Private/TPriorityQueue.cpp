@@ -1,4 +1,6 @@
-﻿#include "TPriorityQueue.h"
+﻿// Copyright Rancorous Games, 2024
+
+#include "TPriorityQueue.h"
 
 FPriorityQueueNode::FPriorityQueueNode() : DataInteger(0), Cost(0.0f) {}
 

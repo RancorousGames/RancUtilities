@@ -1,4 +1,4 @@
-﻿// Copyright Rancorous Games, 2023
+﻿// Copyright Rancorous Games, 2024
 
 #include "RancUtilityLibrary.h"
 #include "GameFramework/Actor.h"

@@ -16,10 +16,10 @@ struct FSWeightedItem
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeightedRandomSelector")
 	UObject* Item = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeightedRandomSelector")
 	float Weight = 1.0f;
 };
 

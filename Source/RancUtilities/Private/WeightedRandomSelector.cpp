@@ -1,5 +1,6 @@
-﻿#include "WeightedRandomSelector.h"
+﻿// Copyright Rancorous Games, 2024
 
+#include "WeightedRandomSelector.h"
 
 UObject* UWeightedRandomSelector::SelectRandomWeightedItem(const TArray<FSWeightedItem>& Items)
 {

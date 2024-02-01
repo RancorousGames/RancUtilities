@@ -1,6 +1,8 @@
-﻿#include "MovementUtilityComponent.h"
+﻿// Copyright Rancorous Games, 2024
 
 #include "MovementUtilityComponent.h"
+#include "Engine/World.h"
+#include "TimerManager.h"
 
 UMovementUtilityComponent::UMovementUtilityComponent()
 {
