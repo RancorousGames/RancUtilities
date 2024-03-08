@@ -1,8 +1,14 @@
 ﻿// Copyright Rancorous Games, 2024
 
 #include "RancUtilityLibrary.h"
+
+#include "AlwaysFaceCameraComponent.h"
+#include "GameplayTagContainer.h"
+#include "GameplayTagsManager.h"
 #include "GameFramework/Actor.h"
 #include "Components/ActorComponent.h"
+#include "Components/TextRenderComponent.h"
+#include "Engine/Font.h"
 
 void URancUtilityLibrary::ForceDestroyComponent(UActorComponent* Component)
 {
@@ -117,4 +123,60 @@ FVector URancUtilityLibrary::GetPointOnCircleAroundTarget(const FVector& SourceP
 	FVector Direction = (TargetPosition - SourcePosition).GetSafeNormal();
 	FVector RotatedDirection = Direction.RotateAngleAxis(AngleDegrees + 180, FVector::UpVector);
 	return TargetPosition + Radius * RotatedDirection;
+}
+
+void URancUtilityLibrary::CreateFloatingText(const UObject* WorldContextObject, const FString& Text, const FVector Location, const FRotator Rotation, const FLinearColor Color, const double Scale, const double LifeTime, UFont* Font, bool AlwaysFaceCamera)
+{
+	if (!WorldContextObject) return;
+
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World) return;
+
+	// Create a new Actor
+	AActor* TextActor = World->SpawnActor<AActor>(AActor::StaticClass(), Location, Rotation);
+	if (!TextActor) return;
+
+	// Create and set as the root component a SceneComponent
+	USceneComponent* RootComponent = NewObject<USceneComponent>(TextActor);
+	if (!RootComponent) return;
+	RootComponent->SetMobility(EComponentMobility::Movable);
+	RootComponent->RegisterComponent();
+	TextActor->SetRootComponent(RootComponent);
+
+	// Set the root component's transform to the desired location, rotation, and scale
+	RootComponent->SetWorldLocationAndRotation(Location, Rotation);
+
+	// Now attach your TextRenderComponent to this properly positioned root component
+	UTextRenderComponent* TextComp = NewObject<UTextRenderComponent>(TextActor);
+	if (!TextComp) return;
+	TextComp->RegisterComponent();
+	TextComp->AttachToComponent(RootComponent, FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+	// Setup the TextRenderComponent properties
+	TextComp->SetText(FText::FromString(Text));
+	TextComp->SetTextRenderColor(Color.ToFColor(true));
+	TextComp->SetWorldSize(Scale*25);
+	TextComp->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
+	TextComp->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
+	
+	if (Font)
+		TextComp->SetFont(Font);
+
+	// Set the lifetime of the text
+	if (LifeTime > 0.00001)
+	{
+		TextActor->SetLifeSpan(LifeTime);
+	}
+
+	if (AlwaysFaceCamera)
+	{
+		UAlwaysFaceCameraComponent* AlwaysFaceCameraComponent = NewObject<UAlwaysFaceCameraComponent>(TextActor);
+		if (!AlwaysFaceCameraComponent) return;
+		AlwaysFaceCameraComponent->RegisterComponent();
+	}
+}
+
+FGameplayTag URancUtilityLibrary::StringToGameplayTag(FName TagName)
+{
+	return UGameplayTagsManager::Get().RequestGameplayTag(TagName, false);
 }
