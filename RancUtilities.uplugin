@@ -24,6 +24,17 @@
 			"PlatformDenyList": [
 				"Android"
 			]
+		},
+		{
+			"Name": "RancEditorUtilities",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "GameplayTagsEditor",
+			"Enabled": true
 		}
 	]
 }

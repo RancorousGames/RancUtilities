@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "RancUtilityLibrary.generated.h"
 
@@ -43,7 +44,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Logging")
 	static void ThrottledLog(const FString& Message, float ThrottlePeriod = 1.0f,
 	                         const FString& Key = "DefaultThrottleLogKey");
-	
+
 	/* 
 	 * Executes an action but throttles it so it is only executed once per the specified period even if called more often.
 	 * Useful for reducing frequency of operations that should not occur too frequently (like logging, network requests, etc.).
@@ -81,7 +82,7 @@ public:
 	/* Gets a random 3D unit vector but with Z = 0. */
 	UFUNCTION(BlueprintPure, Category = "Math|Random")
 	static FVector GetRandomWorldPlaneUnitVector();
-	
+
 	/*
 	 * Calculates a point on a circle at a specific angle from the source to the target.
 	 * Useful for positioning around a central target point.
@@ -101,9 +102,41 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static FVector GetPointOnCircleAroundTarget(const FVector& SourcePosition, const FVector& TargetPosition, float Radius, float AngleDegrees);
 
+	// Creates a floating text message at the specified location. uses a custom K2 node, see RancEditorUtilities/K2NodeCreationHelper.h for details
+	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "CreateFloatingText", BlueprintInternalUseOnly = "true"))
+	static void CreateFloatingText(const UObject* WorldContextObject, const FString& Text, const FVector Location, const FRotator Rotation, const FLinearColor Color = FLinearColor::Red,
+	                               const double Scale = 1.0f, const double LifeTime = 5.0f,  UFont* Font = nullptr, bool AlwaysFaceCamera = true);
+
+	UFUNCTION(BlueprintPure, Category = "Utility")
+	static FGameplayTag StringToGameplayTag(FName TagName);
+
 private:
 	// map that contains the last time a message was logged and the throttle period
 	inline static TMap<FString, TTuple<double, float>> ThrottleLogMap = {};
 
 	inline static TMap<FString, double> ThrottleMap = {};
 };
+
+/* Further ideas
+
+"Snap to Grid": A function that takes a vector location and snaps it to the nearest point on a grid with a specified grid size.
+
+"Is Point Inside Sphere": A function that checks if a given point is inside a sphere defined by its center and radius.
+
+"Lerp Rotator": A function that performs linear interpolation between two rotators based on a provided alpha value.
+
+"Get Closest Point on Line": A function that returns the closest point on a line segment to a given point in 3D space.
+
+"Normalize Angle": A function that normalizes an angle to be within the range of -180 to 180 degrees.
+
+"Is Point on Screen": A function that checks if a given 3D point in world space is visible on the screen.
+
+"Get Mouse Position in World": A function that returns the mouse cursor position in world space based on the current camera view.
+
+"Get Random Point in Cone": A function that generates a random point within a cone defined by its origin, direction, and angle.
+
+"Is Point Inside Box": A function that checks if a given point is inside an axis-aligned bounding box (AABB) defined by its min and max vectors.
+
+"Get Relative Rotation": A function that returns the relative rotation between two rotators, useful for calculating the difference in orientation between two objects.
+
+*/
