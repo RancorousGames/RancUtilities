@@ -82,6 +82,11 @@ int UWeightedRandomSelector::SelectRandomItemIndex(const TArray<UObject*>& Items
 
 int UWeightedRandomSelector::SelectRandomWeightedIndex(const TArray<float>& Weights)
 {
+	if (Weights.Num() == 0)
+	{
+		return 0;
+	}
+	
 	float TotalWeight = 0.f;
 	for (float Weight : Weights)
 	{
@@ -91,6 +96,11 @@ int UWeightedRandomSelector::SelectRandomWeightedIndex(const TArray<float>& Weig
 	const float RandomWeight = FMath::RandRange(0.f, TotalWeight);
 	float CurrentWeight = 0.f;
 
+	if (TotalWeight == 0.f)
+	{
+		return FMath::RandRange(0, Weights.Num() - 1);
+	}
+	
 	for (int32 i = 0; i < Weights.Num(); ++i)
 	{
 		CurrentWeight += Weights[i];
@@ -101,4 +111,16 @@ int UWeightedRandomSelector::SelectRandomWeightedIndex(const TArray<float>& Weig
 	}
 
 	return INDEX_NONE; // Return -1 (INDEX_NONE) if no index is selected (e.g., if Weights is empty or all weights are zero)
+}
+
+int UWeightedRandomSelector::RollDice(int DiceCount, int DiceSides, bool bDiceHas0)
+{
+	// roll the dice
+	int32 DiceResult = 0;
+	for (int32 i = 0; i < DiceCount; ++i)
+	{
+		DiceResult += FMath::RandRange(bDiceHas0 ? 0 : 1, DiceSides);
+	}
+
+	return DiceResult;
 }

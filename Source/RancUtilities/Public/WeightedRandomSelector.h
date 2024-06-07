@@ -68,7 +68,18 @@ public:
 
 	// Selects a random index from an array of weights.
 	// @param Weights - Array of floats representing the weights.
+	// If the array is empty, the function will return index 0.
+	// If the array is just 0s then we will have an even distribution
 	// @return int - The index of the selected weight.
 	UFUNCTION(BlueprintCallable, Category = "WeightedRandomSelector")
 	static int SelectRandomWeightedIndex(const TArray<float>& Weights);
+
+	// Gets a random dice roll based on the number of dice and sides.
+	// @param DiceCount - The number of dice to roll.
+	// @param DiceSides - The number of sides on each die.
+	// @param bDiceHas0 - Whether the dice can roll a 0.
+	// @return int - The result of the dice roll.
+	UFUNCTION(BlueprintCallable, Category = "WeightedRandomSelector")
+	static int RollDice(int DiceCount, int DiceSides, bool bDiceHas0 = false);
+	
 };
