@@ -10,6 +10,11 @@
 #include "Components/TextRenderComponent.h"
 #include "Engine/Font.h"
 
+void URancUtilityLibrary::ShouldNotHappen(FString Message)
+{
+	ensureMsgf(false, TEXT("%s"), *Message);
+}
+
 void URancUtilityLibrary::ForceDestroyComponent(UActorComponent* Component)
 {
 	if (Component && Component->IsValidLowLevel())

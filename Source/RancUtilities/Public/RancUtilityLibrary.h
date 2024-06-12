@@ -29,6 +29,18 @@ class RANCUTILITIES_API URancUtilityLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
+
+	/* An explicit "Do nothing" node for better blueprint node layout. */
+	UFUNCTION(BlueprintCallable, Meta = (DevelopmentOnly, CompactNodeTitle = "Do Nothing"))
+	static void DoNothing()
+	{
+	}
+
+	/* A Should not happen node for assertion/debugging purposes. */
+	UFUNCTION(BlueprintCallable,  Meta = (DevelopmentOnly, CompactNodeTitle = "Should Not Happen"))
+	static void ShouldNotHappen(FString Message = "Should not Happen node ran!");
+
+
 	/* Destroys the specified component from its owner actor.
 	 * @param Component - The component to be destroyed. */
 	UFUNCTION(BlueprintCallable, Category = "Component")
@@ -109,6 +121,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Utility")
 	static FGameplayTag StringToGameplayTag(FName TagName);
+
 
 private:
 	// map that contains the last time a message was logged and the throttle period
