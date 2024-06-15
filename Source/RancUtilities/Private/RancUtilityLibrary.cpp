@@ -9,6 +9,8 @@
 #include "Components/ActorComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/Font.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/HUD.h"
 
 void URancUtilityLibrary::ShouldNotHappen(FString Message)
 {
@@ -128,6 +130,89 @@ FVector URancUtilityLibrary::GetPointOnCircleAroundTarget(const FVector& SourceP
 	FVector Direction = (TargetPosition - SourcePosition).GetSafeNormal();
 	FVector RotatedDirection = Direction.RotateAngleAxis(AngleDegrees + 180, FVector::UpVector);
 	return TargetPosition + Radius * RotatedDirection;
+}
+
+
+bool URancUtilityLibrary::GetCapsuleTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult)
+{
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PlayerController->Player);
+	bool bHit = false;
+	if (LocalPlayer && LocalPlayer->ViewportClient)
+	{
+		FVector2D MousePosition;
+		if (LocalPlayer->ViewportClient->GetMousePosition(MousePosition))
+		{
+			bHit = GetCapsuleTraceHitResultAtScreenPosition(PlayerController, MousePosition, TraceChannel, TraceRadius, bTraceComplex, HitResult);
+		}
+	}
+
+	if(!bHit)	//If there was no hit we reset the results. This is redundant but helps Blueprint users
+	{
+		HitResult = FHitResult();
+	}
+
+	return bHit;
+}
+
+
+bool URancUtilityLibrary::GetCapsuleTraceHitResultAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult)
+{
+	// Early out if we clicked on a HUD hitbox
+	if (PlayerController->GetHUD() != nullptr && PlayerController->GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
+	{
+		return false;
+	}
+
+	FVector WorldOrigin;
+	FVector WorldDirection;
+	if (UGameplayStatics::DeprojectScreenToWorld(PlayerController, ScreenPosition, WorldOrigin, WorldDirection) == true)
+	{
+		FCollisionQueryParams Params;
+		Params.bTraceComplex = bTraceComplex;
+		
+		return PlayerController->GetWorld()->SweepSingleByChannel(HitResult, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeCapsule(TraceRadius, TraceRadius), Params);
+	}
+
+	return false;
+}
+
+
+bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits)
+{
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PlayerController->Player);
+	bool bHit = false;
+	if (LocalPlayer && LocalPlayer->ViewportClient)
+	{
+		FVector2D MousePosition;
+		if (LocalPlayer->ViewportClient->GetMousePosition(MousePosition))
+		{
+			bHit = GetCapsuleMultiTraceHitResultsAtScreenPosition(PlayerController, MousePosition, TraceChannel, TraceRadius, bTraceComplex, OutHits);
+		}
+	}
+
+	return bHit;
+}
+
+
+bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits)
+{
+	// Early out if we clicked on a HUD hitbox
+	if (PlayerController->GetHUD() != nullptr && PlayerController->GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
+	{
+		return false;
+	}
+
+	FVector WorldOrigin;
+	FVector WorldDirection;
+	if (UGameplayStatics::DeprojectScreenToWorld(PlayerController, ScreenPosition, WorldOrigin, WorldDirection) == true)
+	{
+		FCollisionQueryParams Params;
+		Params.bTraceComplex = bTraceComplex;
+		
+		return PlayerController->GetWorld()->SweepMultiByChannel(OutHits, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeCapsule(TraceRadius, TraceRadius), Params);
+	}
+
+	return false;
 }
 
 void URancUtilityLibrary::CreateFloatingText(const UObject* WorldContextObject, const FString& Text, const FVector Location, const FRotator Rotation, const FLinearColor Color, const double Scale, const double LifeTime, UFont* Font, bool AlwaysFaceCamera)

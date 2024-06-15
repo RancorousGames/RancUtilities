@@ -113,7 +113,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static FVector GetPointOnCircleAroundTarget(const FVector& SourcePosition, const FVector& TargetPosition, float Radius, float AngleDegrees);
+	
+	
+	/* Equivalent to PlayerControllers GetHitResultUnderCursorByChannel but with a capsule trace instead of line trace */
+	UFUNCTION(BlueprintCallable, Category = "Utility")
+	static bool GetCapsuleTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult);
+	static bool GetCapsuleTraceHitResultAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult);
 
+	UFUNCTION(BlueprintCallable, Category = "Utility")
+	static bool GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits);
+	static bool GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits);
+
+	
 	// Creates a floating text message at the specified location. uses a custom K2 node, see RancEditorUtilities/K2NodeCreationHelper.h for details
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "CreateFloatingText", BlueprintInternalUseOnly = "true"))
 	static void CreateFloatingText(const UObject* WorldContextObject, const FString& Text, const FVector Location, const FRotator Rotation, const FLinearColor Color = FLinearColor::Red,
