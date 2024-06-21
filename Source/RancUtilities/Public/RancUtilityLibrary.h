@@ -37,7 +37,7 @@ public:
 	}
 
 	/* A Should not happen node for assertion/debugging purposes. */
-	UFUNCTION(BlueprintCallable,  Meta = (DevelopmentOnly, CompactNodeTitle = "Should Not Happen"))
+	UFUNCTION(BlueprintCallable,  Meta = (DevelopmentOnly, CompactNodeTitle = "Bad Event"))
 	static void ShouldNotHappen(FString Message = "Should not Happen node ran!");
 
 
@@ -69,11 +69,13 @@ public:
 	static void ThrottledAction(float ThrottlePeriod, EThrottleActionState& Branches,
 	                            const FString& Key = "UniqueKeyHere");
 
-	/*
-	 * Calculates a location in front of the actor by a specified distance.
-	 */
+	/* Calculates a location in front of the actor by a specified distance.	 */
 	UFUNCTION(BlueprintPure, Category="Actor")
 	static FVector GetLocationInFrontOfActor(AActor* Actor, float Distance);
+
+	/* Calculates a location above the actor by a specified distance. */
+	UFUNCTION(BlueprintPure, Category="Actor")
+	static FVector GetLocationAboveActorOrigin(AActor* Actor, float Distance);
 
 	/* Toggles the state of a boolean variable and returns the previous state as an enum. */
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (ExpandEnumAsExecs = "Branches"))
@@ -94,6 +96,10 @@ public:
 	/* Gets a random 3D unit vector but with Z = 0. */
 	UFUNCTION(BlueprintPure, Category = "Math|Random")
 	static FVector GetRandomWorldPlaneUnitVector();
+
+	/* Given a trace and a height, find the intersection point between the trace and the plane at that height */
+	UFUNCTION(BlueprintPure, Category = "Math|Random")
+	static FVector GetIntersectionPointWithPlane(const FVector& StartPoint, const FVector& EndPoint, float PlaneZ);
 
 	/*
 	 * Calculates a point on a circle at a specific angle from the source to the target.

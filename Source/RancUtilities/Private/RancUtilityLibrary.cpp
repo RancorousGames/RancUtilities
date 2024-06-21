@@ -89,6 +89,29 @@ FVector URancUtilityLibrary::GetLocationInFrontOfActor(AActor* Actor, float Dist
 	return NewLocation;
 }
 
+
+FVector URancUtilityLibrary::GetLocationAboveActorOrigin(AActor* Actor, float Distance)
+{
+	if (!Actor)
+	{
+		return FVector::ZeroVector;
+	}
+
+	// Get the actor's forward vector
+	const FVector Up = Actor->GetActorUpVector();
+
+	// Scale the vector by the desired distance
+	const FVector ScaledVector = Up * Distance;
+
+	// Get the actor's current location
+	const FVector ActorLocation = Actor->GetActorLocation();
+
+	// Calculate the new location in front of the actor
+	const FVector NewLocation = ActorLocation + ScaledVector;
+
+	return NewLocation;
+}
+
 void URancUtilityLibrary::ToggleBool(bool& BoolToToggle, EBoolState& Branches)
 {
 	BoolToToggle = !BoolToToggle;
@@ -124,8 +147,30 @@ FVector URancUtilityLibrary::GetRandomWorldPlaneUnitVector()
 	return FVector(X, Y, 0.0f);
 }
 
+FVector URancUtilityLibrary::GetIntersectionPointWithPlane(const FVector& StartPoint, const FVector& EndPoint, float PlaneZ)
+{
+    FVector Direction = EndPoint - StartPoint;
+
+    if (FMath::IsNearlyZero(Direction.Z))
+    {
+        return FVector::ZeroVector; // Return zero vector if parallel to the plane
+    }
+
+    // Calculate the scalar parameter t
+    float t = (PlaneZ - StartPoint.Z) / Direction.Z;
+
+    // Ensure t is within the range [0, 1] to lie within the line segment
+    if (t < 0.0f || t > 1.0f)
+    {
+        return FVector::ZeroVector; // Return zero vector if intersection point is not within the segment
+    }
+
+    // Calculate the intersection point
+    return StartPoint + t * Direction;
+}
+
 FVector URancUtilityLibrary::GetPointOnCircleAroundTarget(const FVector& SourcePosition, const FVector& TargetPosition,
-	float Radius, float AngleDegrees)
+                                                          float Radius, float AngleDegrees)
 {
 	FVector Direction = (TargetPosition - SourcePosition).GetSafeNormal();
 	FVector RotatedDirection = Direction.RotateAngleAxis(AngleDegrees + 180, FVector::UpVector);
@@ -208,8 +253,8 @@ bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const A
 	{
 		FCollisionQueryParams Params;
 		Params.bTraceComplex = bTraceComplex;
-		
-		return PlayerController->GetWorld()->SweepMultiByChannel(OutHits, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeCapsule(TraceRadius, TraceRadius), Params);
+		Params.AddIgnoredActor(PlayerController->GetPawn());
+		return PlayerController->GetWorld()->SweepMultiByChannel(OutHits, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
 	}
 
 	return false;
