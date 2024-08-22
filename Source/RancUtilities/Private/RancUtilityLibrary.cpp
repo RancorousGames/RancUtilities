@@ -11,6 +11,7 @@
 #include "Engine/Font.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/HUD.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void URancUtilityLibrary::ShouldNotHappen(FString Message)
 {
@@ -167,6 +168,50 @@ FVector URancUtilityLibrary::GetIntersectionPointWithPlane(const FVector& StartP
 
     // Calculate the intersection point
     return StartPoint + t * Direction;
+}
+
+float URancUtilityLibrary::GetYawDifferenceActorFacingToPoint(AActor* Actor, FVector TargetPoint)
+{
+	if (!Actor)
+	{
+		return 0.0f;
+	}
+
+	// Get the actor's forward vector
+	FVector ActorForward = Actor->GetActorForwardVector();
+
+	// Calculate the direction vector from the actor's location to the target point
+	FVector DirectionToTarget = TargetPoint - Actor->GetActorLocation();
+	DirectionToTarget.Normalize();
+
+	// Get the actor's forward vector's yaw
+	FRotator ActorForwardRot = ActorForward.Rotation();
+	float ActorYaw = ActorForwardRot.Yaw;
+
+	// Get the direction vector's yaw
+	FRotator DirectionRot = DirectionToTarget.Rotation();
+	float TargetYaw = DirectionRot.Yaw;
+
+	// Calculate the yaw difference
+	float YawDifference = UKismetMathLibrary::NormalizedDeltaRotator(FRotator(0, ActorYaw, 0), FRotator(0, TargetYaw, 0)).Yaw;
+
+	return YawDifference;
+}
+
+float URancUtilityLibrary::GetYawAngleDifference(FVector Dir1, FVector Dir2)
+{
+	// Normalize both direction vectors
+	Dir1.Normalize();
+	Dir2.Normalize();
+
+	// Get the rotators from the direction vectors
+	FRotator Rot1 = Dir1.Rotation();
+	FRotator Rot2 = Dir2.Rotation();
+
+	// Calculate the yaw difference
+	float YawDifference = UKismetMathLibrary::NormalizedDeltaRotator(FRotator(0, Rot1.Yaw, 0), FRotator(0, Rot2.Yaw, 0)).Yaw;
+
+	return YawDifference;
 }
 
 FVector URancUtilityLibrary::GetPointOnCircleAroundTarget(const FVector& SourcePosition, const FVector& TargetPosition,

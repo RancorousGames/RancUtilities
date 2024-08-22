@@ -101,6 +101,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Math|Random")
 	static FVector GetIntersectionPointWithPlane(const FVector& StartPoint, const FVector& EndPoint, float PlaneZ);
 
+	/* Given an actor and a target point, get the yaw between the actors forward vector towards the given point*/
+	UFUNCTION(BlueprintCallable, Category = "Utilities")
+	static float GetYawDifferenceActorFacingToPoint(AActor* Actor, FVector TargetPoint);
+	
+	/* Given two direction vectors in world space, calculate the yaw angle between them */
+	UFUNCTION(BlueprintCallable, Category = "Utilities")
+	static float GetYawAngleDifference(FVector Dir1, FVector Dir2);
+	
 	/*
 	 * Calculates a point on a circle at a specific angle from the source to the target.
 	 * Useful for positioning around a central target point.
@@ -138,7 +146,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Utility")
 	static FGameplayTag StringToGameplayTag(FName TagName);
-
 
 private:
 	// map that contains the last time a message was logged and the throttle period
