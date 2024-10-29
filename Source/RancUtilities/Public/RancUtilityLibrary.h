@@ -135,8 +135,9 @@ public:
 	static bool GetCapsuleTraceHitResultAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult);
 
 	UFUNCTION(BlueprintCallable, Category = "Utility")
-	static bool GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits);
-	static bool GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits);
+	static bool GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<FHitResult>& OutHits, bool DrawDebug);
+	static bool GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<FHitResult>& OutHits, bool
+	                                                           DebugDraw);
 
 	
 	// Creates a floating text message at the specified location. uses a custom K2 node, see RancEditorUtilities/K2NodeCreationHelper.h for details

@@ -267,7 +267,7 @@ bool URancUtilityLibrary::GetCapsuleTraceHitResultAtScreenPosition(const APlayer
 }
 
 
-bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits)
+bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits, bool DrawDebug)
 {
 	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(PlayerController->Player);
 	bool bHit = false;
@@ -276,7 +276,7 @@ bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultUnderCursorByChannel(APla
 		FVector2D MousePosition;
 		if (LocalPlayer->ViewportClient->GetMousePosition(MousePosition))
 		{
-			bHit = GetCapsuleMultiTraceHitResultsAtScreenPosition(PlayerController, MousePosition, TraceChannel, TraceRadius, bTraceComplex, OutHits);
+			bHit = GetCapsuleMultiTraceHitResultsAtScreenPosition(PlayerController, MousePosition, TraceChannel, TraceRadius, bTraceComplex, OutHits, DrawDebug);
 		}
 	}
 
@@ -284,7 +284,7 @@ bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultUnderCursorByChannel(APla
 }
 
 
-bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits)
+bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits, bool DebugDraw)
 {
 	// Early out if we clicked on a HUD hitbox
 	if (PlayerController->GetHUD() != nullptr && PlayerController->GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
@@ -299,7 +299,21 @@ bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const A
 		FCollisionQueryParams Params;
 		Params.bTraceComplex = bTraceComplex;
 		Params.AddIgnoredActor(PlayerController->GetPawn());
-		return PlayerController->GetWorld()->SweepMultiByChannel(OutHits, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);
+		
+		if (DebugDraw)
+		{
+			for (int32 i = 0; i < 16; ++i)
+			{
+				float Spacing = 200.f;
+				float Distance = i * Spacing;
+				FVector StepLocation = WorldOrigin + WorldDirection * Distance;
+				
+				DrawDebugSphere(PlayerController->GetWorld(), StepLocation, TraceRadius, 8, FColor::Blue, false, 0.1f);
+			}
+
+		}
+		
+		return PlayerController->GetWorld()->SweepMultiByChannel(OutHits, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params);		
 	}
 
 	return false;
