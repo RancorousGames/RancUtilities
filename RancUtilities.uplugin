@@ -10,7 +10,7 @@
 	"DocsURL": "https://docs.google.com/document/d/1NgFJkfS8GWNjrEPid0WCYStjzytaCDFjkdeGtIKXMvM/edit?usp=sharing",
 	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/d107d26433e546aea4c4a90521f7d9a2",
 	"SupportURL": "https://github.com/RancorousGames/RancUtilities/issues",
-	"EngineVersion": "5.4.0",
+	"EngineVersion": "5.5.0",
 	"CanContainContent": true,
 	"Installed": false,
 	"Modules": [
