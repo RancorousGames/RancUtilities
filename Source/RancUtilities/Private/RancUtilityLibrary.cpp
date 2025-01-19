@@ -374,3 +374,93 @@ FGameplayTag URancUtilityLibrary::StringToGameplayTag(FName TagName)
 {
 	return UGameplayTagsManager::Get().RequestGameplayTag(TagName, false);
 }
+
+UWorld* FindWorld(const UObject* ContextObject)
+{
+	if (ContextObject)
+	{
+		if (UWorld* World = GEngine->GetWorldFromContextObject(ContextObject, EGetWorldErrorMode::ReturnNull))
+		{
+			return World;
+		}
+	}
+
+	if (GEngine && GEngine->GetWorldContexts().Num() > 0)
+	{
+		TIndirectArray<FWorldContext> worlds = GEngine->GetWorldContexts();
+		for (const FWorldContext& WorldContext : worlds)
+		{
+			if (WorldContext.WorldType != EWorldType::Editor && WorldContext.WorldType != EWorldType::EditorPreview)
+			{
+				return WorldContext.World();
+			}
+		}
+
+		return worlds[0].World(); // Needed for tests
+	}
+
+	return nullptr;
+}
+
+void URancUtilityLibrary::VisualizePoint(FVector Location, FVector CubeSize, bool bLineTraceFromAbove)
+{
+	auto World = FindWorld(nullptr);
+
+    if (!World)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("VisualizePoint: Unable to retrieve valid World context."));
+        return;
+    }
+
+    // Check if the debug cube exists; if not, spawn it
+    if (!DebugCubeActor)
+    {
+        FActorSpawnParameters SpawnParams;
+        SpawnParams.Name = TEXT("DebugCubeActor");
+        SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+        DebugCubeActor = World->SpawnActor<AActor>(AActor::StaticClass(), FTransform(), SpawnParams);
+
+        if (DebugCubeActor)
+        {
+            UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(DebugCubeActor);
+            MeshComponent->RegisterComponent();
+            DebugCubeActor->SetRootComponent(MeshComponent);
+
+            // Set the cube's appearance
+            static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube"));
+            if (CubeMesh.Succeeded())
+            {
+                MeshComponent->SetStaticMesh(CubeMesh.Object);
+            }
+
+            // Adjust cube scale
+            MeshComponent->SetWorldScale3D(CubeSize);
+            MeshComponent->SetMobility(EComponentMobility::Movable);
+            MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        }
+    }
+
+    // Perform a line trace from above if enabled
+    if (bLineTraceFromAbove)
+    {
+        FVector TraceStart = FVector(Location.X, Location.Y, Location.Z + 1000.0f); // Start trace above the location
+        FVector TraceEnd = Location;
+
+        FHitResult HitResult;
+        FCollisionQueryParams TraceParams;
+        TraceParams.bTraceComplex = true;
+        TraceParams.AddIgnoredActor(DebugCubeActor);
+
+        if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, TraceParams))
+        {
+            Location = HitResult.Location; // Update the location to the hit location
+        }
+    }
+
+    // Update the cube's position
+    if (DebugCubeActor)
+    {
+        DebugCubeActor->SetActorLocation(Location);
+    }
+}

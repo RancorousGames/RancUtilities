@@ -23,6 +23,8 @@ enum class EThrottleActionState : uint8
 	Throttled UMETA(DisplayName = "Throttled")
 };
 
+static AActor* DebugCubeActor = nullptr; // Global variable to store the debug cube actor
+
 UCLASS()
 class RANCUTILITIES_API URancUtilityLibrary : public UBlueprintFunctionLibrary
 {
@@ -139,7 +141,6 @@ public:
 	static bool GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<FHitResult>& OutHits, bool
 	                                                           DebugDraw);
 
-	
 	// Creates a floating text message at the specified location. uses a custom K2 node, see RancEditorUtilities/K2NodeCreationHelper.h for details
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (WorldContext = "WorldContextObject", CompactNodeTitle = "CreateFloatingText", BlueprintInternalUseOnly = "true"))
 	static void CreateFloatingText(const UObject* WorldContextObject, const FString& Text, const FVector Location, const FRotator Rotation, const FLinearColor Color = FLinearColor::Red,
@@ -147,6 +148,17 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Utility")
 	static FGameplayTag StringToGameplayTag(FName TagName);
+	
+	/*
+	 * Visualizes a point in the world by moving a reusable debug cube to the specified location.
+	 * Optionally performs a line trace from above to adjust the cube's position.
+	 *
+	 * @param Location - The target location for the debug cube.
+	 * @param CubeSize - The size of the debug cube (default is 0.1, 0.1, 0.1).
+	 * @param bLineTraceFromAbove - Whether to perform a line trace from above before placing the cube.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Debug")
+	static void VisualizePoint(FVector Location, FVector CubeSize = FVector(0.1f, 0.1f, 0.1f), bool bLineTraceFromAbove = false);
 
 private:
 	// map that contains the last time a message was logged and the throttle period
