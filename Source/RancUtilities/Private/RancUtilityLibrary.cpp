@@ -18,6 +18,42 @@ void URancUtilityLibrary::ShouldNotHappen(FString Message)
 	ensureMsgf(false, TEXT("%s"), *Message);
 }
 
+bool URancUtilityLibrary::IsDedicatedServerWorldContext(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject)
+		return false;
+
+	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	if (!World)
+		return false;
+
+	return World->IsNetMode(NM_DedicatedServer);
+}
+
+bool URancUtilityLibrary::IsListenServerWorldContext(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject)
+		return false;
+
+	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	if (!World)
+		return false;
+
+	return World->IsNetMode(NM_ListenServer);
+}
+
+bool URancUtilityLibrary::IsClientWorldContext(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject)
+		return false;
+
+	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	if (!World)
+		return false;
+
+	return World->IsNetMode(NM_Client);
+}
+
 void URancUtilityLibrary::ForceDestroyComponent(UActorComponent* Component)
 {
 	if (Component && Component->IsValidLowLevel())
