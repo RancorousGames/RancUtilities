@@ -43,6 +43,24 @@ public:
 	static void ShouldNotHappen(FString Message = "Should not Happen node ran!");
 
 
+	/* * Checks if the current game is running on a dedicated server.
+	 * @return True if the game is running on a dedicated server, false otherwise.
+	 * Equivalent to existing IsDedicatedServer for actors but more generally available.
+	 */
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Utilities")
+	static bool IsDedicatedServerWorldContext(const UObject* WorldContextObject);
+
+	/* * Checks if the current game is running as a listen server.
+	 * @return True if the game is running as a listen server, false otherwise. */
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Utilities")
+	static bool IsListenServerWorldContext(const UObject* WorldContextObject);
+
+	/* * Checks if the current game is running as a client.
+	 * @return True if the game is running as a client, false otherwise.
+	 * Note that standalone and listen server is not client */
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "Utilities")
+	static bool IsClientWorldContext(const UObject* WorldContextObject);
+
 	/* Destroys the specified component from its owner actor.
 	 * @param Component - The component to be destroyed. */
 	UFUNCTION(BlueprintCallable, Category = "Component")
@@ -83,6 +101,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (ExpandEnumAsExecs = "Branches"))
 	static void ToggleBool(UPARAM(ref) bool& BoolToToggle, EBoolState& Branches);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "1-"))
+	static float OneMinus(float Value);
+	
 	/* Increments an integer variable without requiring a set */
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (CompactNodeTitle = "++"))
 	static void IncrementInt(UPARAM(ref) int32& Value, const int32 MaxValue);

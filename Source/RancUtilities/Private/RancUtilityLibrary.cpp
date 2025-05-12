@@ -18,6 +18,42 @@ void URancUtilityLibrary::ShouldNotHappen(FString Message)
 	ensureMsgf(false, TEXT("%s"), *Message);
 }
 
+bool URancUtilityLibrary::IsDedicatedServerWorldContext(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject)
+		return false;
+
+	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	if (!World)
+		return false;
+
+	return World->IsNetMode(NM_DedicatedServer);
+}
+
+bool URancUtilityLibrary::IsListenServerWorldContext(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject)
+		return false;
+
+	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	if (!World)
+		return false;
+
+	return World->IsNetMode(NM_ListenServer);
+}
+
+bool URancUtilityLibrary::IsClientWorldContext(const UObject* WorldContextObject)
+{
+	if (!WorldContextObject)
+		return false;
+
+	const UWorld* World = GEngine->GetWorldFromContextObjectChecked(WorldContextObject);
+	if (!World)
+		return false;
+
+	return World->IsNetMode(NM_Client);
+}
+
 void URancUtilityLibrary::ForceDestroyComponent(UActorComponent* Component)
 {
 	if (Component && Component->IsValidLowLevel())
@@ -118,6 +154,11 @@ void URancUtilityLibrary::ToggleBool(bool& BoolToToggle, EBoolState& Branches)
 	BoolToToggle = !BoolToToggle;
 
 	Branches = BoolToToggle ? EBoolState::WasFalse : EBoolState::WasTrue;
+}
+
+float URancUtilityLibrary::OneMinus(float Value)
+{
+	return 1.0f - Value;
 }
 
 void URancUtilityLibrary::IncrementInt(int32& Value, const int32 MaxValue)
