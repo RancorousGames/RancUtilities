@@ -104,6 +104,15 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "1-"))
 	static float OneMinus(float Value);
 	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "Diff"))
+	static float Difference(float Value1, float Value2);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "Diff >"))
+	static bool IsDifferenceGreater(float Value1, float Value2, float Threshold);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "Same +-"))
+	static bool IsSignSame(float Value1, float Value2);
+	
 	/* Increments an integer variable without requiring a set */
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (CompactNodeTitle = "++"))
 	static void IncrementInt(UPARAM(ref) int32& Value, const int32 MaxValue);

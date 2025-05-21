@@ -161,6 +161,21 @@ float URancUtilityLibrary::OneMinus(float Value)
 	return 1.0f - Value;
 }
 
+float URancUtilityLibrary::Difference(float Value1, float Value2)
+{
+	return FMath::Abs(Value1 - Value2);
+}
+
+bool URancUtilityLibrary::IsDifferenceGreater(float Value1, float Value2, float Threshold)
+{
+	return FMath::Abs(Value1 - Value2) > Threshold;
+}
+
+bool URancUtilityLibrary::IsSignSame(float Value1, float Value2)
+{
+	return (Value1 >= 0 && Value2 >= 0) || (Value1 <= 0 && Value2 <= 0);
+}
+
 void URancUtilityLibrary::IncrementInt(int32& Value, const int32 MaxValue)
 {
 	++Value;
