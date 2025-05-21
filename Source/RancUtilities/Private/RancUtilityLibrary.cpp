@@ -104,6 +104,30 @@ void URancUtilityLibrary::ThrottledAction(float ThrottlePeriod, EThrottleActionS
 	}
 }
 
+void URancUtilityLibrary::RandomBranch(float Chance1, float Chance2, float Chance3, ERandomBranchState& Branches)
+{
+	const float TotalChance = Chance1 + Chance2 + Chance3;
+	if (TotalChance <= 0.f)
+	{
+		return;
+	}
+
+	const float RandomValue = FMath::FRandRange(0.f, TotalChance);
+
+	if (RandomValue < Chance1)
+	{
+		Branches = ERandomBranchState::Branch1;
+	}
+	else if (RandomValue < Chance1 + Chance2)
+	{
+		Branches = ERandomBranchState::Branch2;
+	}
+	else
+	{
+		Branches = ERandomBranchState::Branch3;
+	}
+}
+
 FVector URancUtilityLibrary::GetLocationInFrontOfActor(AActor* Actor, float Distance)
 {
 	if (!Actor)
@@ -159,6 +183,21 @@ void URancUtilityLibrary::ToggleBool(bool& BoolToToggle, EBoolState& Branches)
 float URancUtilityLibrary::OneMinus(float Value)
 {
 	return 1.0f - Value;
+}
+
+float URancUtilityLibrary::Difference(float Value1, float Value2)
+{
+	return FMath::Abs(Value1 - Value2);
+}
+
+bool URancUtilityLibrary::IsDifferenceGreater(float Value1, float Value2, float Threshold)
+{
+	return FMath::Abs(Value1 - Value2) > Threshold;
+}
+
+bool URancUtilityLibrary::IsSignSame(float Value1, float Value2)
+{
+	return (Value1 >= 0 && Value2 >= 0) || (Value1 <= 0 && Value2 <= 0);
 }
 
 void URancUtilityLibrary::IncrementInt(int32& Value, const int32 MaxValue)

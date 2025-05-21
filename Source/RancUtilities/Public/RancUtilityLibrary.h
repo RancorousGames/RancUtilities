@@ -23,6 +23,14 @@ enum class EThrottleActionState : uint8
 	Throttled UMETA(DisplayName = "Throttled")
 };
 
+UENUM(BlueprintType)
+enum class ERandomBranchState : uint8
+{
+	Branch1 UMETA(DisplayName = "Branch 1"),
+	Branch2 UMETA(DisplayName = "Branch 2"),
+	Branch3 UMETA(DisplayName = "Branch 3")
+};
+
 static AActor* DebugCubeActor = nullptr; // Global variable to store the debug cube actor
 
 UCLASS()
@@ -89,6 +97,9 @@ public:
 	static void ThrottledAction(float ThrottlePeriod, EThrottleActionState& Branches,
 	                            const FString& Key = "UniqueKeyHere");
 
+	UFUNCTION(BlueprintCallable, Category = "Flow Control", meta = (ExpandEnumAsExecs = "Branches"))
+	static void RandomBranch(float Chance1, float Chance2, float Chance3, ERandomBranchState& Branches);
+
 	/* Calculates a location in front of the actor by a specified distance.	 */
 	UFUNCTION(BlueprintPure, Category="Actor")
 	static FVector GetLocationInFrontOfActor(AActor* Actor, float Distance);
@@ -103,6 +114,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "1-"))
 	static float OneMinus(float Value);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "Diff"))
+	static float Difference(float Value1, float Value2);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "Diff >"))
+	static bool IsDifferenceGreater(float Value1, float Value2, float Threshold);
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Utility", meta = (CompactNodeTitle = "Same +-"))
+	static bool IsSignSame(float Value1, float Value2);
 	
 	/* Increments an integer variable without requiring a set */
 	UFUNCTION(BlueprintCallable, Category = "Utility", meta = (CompactNodeTitle = "++"))
