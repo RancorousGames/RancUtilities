@@ -12,6 +12,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/HUD.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/Engine.h"
+#include "Engine/LocalPlayer.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/GameViewportClient.h"
+#include "GameFramework/Pawn.h"
+#include "Components/StaticMeshComponent.h"
 
 void URancUtilityLibrary::ShouldNotHappen(FString Message)
 {
@@ -325,7 +331,7 @@ bool URancUtilityLibrary::GetCapsuleTraceHitResultUnderCursorByChannel(APlayerCo
 }
 
 
-bool URancUtilityLibrary::GetCapsuleTraceHitResultAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult)
+bool URancUtilityLibrary::GetCapsuleTraceHitResultAtScreenPosition(APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult)
 {
 	// Early out if we clicked on a HUD hitbox
 	if (PlayerController->GetHUD() != nullptr && PlayerController->GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
@@ -339,6 +345,10 @@ bool URancUtilityLibrary::GetCapsuleTraceHitResultAtScreenPosition(const APlayer
 	{
 		FCollisionQueryParams Params;
 		Params.bTraceComplex = bTraceComplex;
+		if (APawn* Pawn = PlayerController->GetPawn())
+		{
+			Params.AddIgnoredActor(Pawn);
+		}
 		
 		return PlayerController->GetWorld()->SweepSingleByChannel(HitResult, WorldOrigin, WorldOrigin + WorldDirection * 10000, FQuat::Identity, TraceChannel, FCollisionShape::MakeCapsule(TraceRadius, TraceRadius), Params);
 	}
@@ -364,7 +374,7 @@ bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultUnderCursorByChannel(APla
 }
 
 
-bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits, bool DebugDraw)
+bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<struct FHitResult>& OutHits, bool DebugDraw)
 {
 	// Early out if we clicked on a HUD hitbox
 	if (PlayerController->GetHUD() != nullptr && PlayerController->GetHUD()->GetHitBoxAtCoordinates(ScreenPosition, true))
@@ -378,7 +388,10 @@ bool URancUtilityLibrary::GetCapsuleMultiTraceHitResultsAtScreenPosition(const A
 	{
 		FCollisionQueryParams Params;
 		Params.bTraceComplex = bTraceComplex;
-		Params.AddIgnoredActor(PlayerController->GetPawn());
+		if (APawn* Pawn = PlayerController->GetPawn())
+		{
+			Params.AddIgnoredActor(Pawn);
+		}
 		
 		if (DebugDraw)
 		{
@@ -455,6 +468,7 @@ FGameplayTag URancUtilityLibrary::StringToGameplayTag(FName TagName)
 	return UGameplayTagsManager::Get().RequestGameplayTag(TagName, false);
 }
 
+#if WITH_EDITOR
 UWorld* FindWorld(const UObject* ContextObject)
 {
 	if (ContextObject)
@@ -508,10 +522,10 @@ void URancUtilityLibrary::VisualizePoint(FVector Location, FVector CubeSize, boo
             DebugCubeActor->SetRootComponent(MeshComponent);
 
             // Set the cube's appearance
-            static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube"));
-            if (CubeMesh.Succeeded())
+            UStaticMesh* CubeMesh = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), nullptr, TEXT("/Engine/BasicShapes/Cube.Cube")));
+            if (CubeMesh)
             {
-                MeshComponent->SetStaticMesh(CubeMesh.Object);
+                MeshComponent->SetStaticMesh(CubeMesh);
             }
 
             // Adjust cube scale
@@ -530,7 +544,10 @@ void URancUtilityLibrary::VisualizePoint(FVector Location, FVector CubeSize, boo
         FHitResult HitResult;
         FCollisionQueryParams TraceParams;
         TraceParams.bTraceComplex = true;
-        TraceParams.AddIgnoredActor(DebugCubeActor);
+        if (DebugCubeActor)
+        {
+        	TraceParams.AddIgnoredActor(DebugCubeActor);
+        }
 
         if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, TraceParams))
         {
@@ -544,3 +561,5 @@ void URancUtilityLibrary::VisualizePoint(FVector Location, FVector CubeSize, boo
         DebugCubeActor->SetActorLocation(Location);
     }
 }
+#endif
+

@@ -41,13 +41,13 @@ class RANCUTILITIES_API URancUtilityLibrary : public UBlueprintFunctionLibrary
 public:
 
 	/* An explicit "Do nothing" node for better blueprint node layout. */
-	UFUNCTION(BlueprintCallable, Meta = (DevelopmentOnly, CompactNodeTitle = "Do Nothing"))
+	UFUNCTION(BlueprintCallable, Category = "Utility", Meta = (DevelopmentOnly, CompactNodeTitle = "Do Nothing"))
 	static void DoNothing()
 	{
 	}
 
 	/* A Should not happen node for assertion/debugging purposes. */
-	UFUNCTION(BlueprintCallable,  Meta = (DevelopmentOnly, CompactNodeTitle = "Bad Event"))
+	UFUNCTION(BlueprintCallable, Category = "Utility",  Meta = (DevelopmentOnly, CompactNodeTitle = "Bad Event"))
 	static void ShouldNotHappen(FString Message = "Should not Happen node ran!");
 
 
@@ -175,11 +175,11 @@ public:
 	/* Equivalent to PlayerControllers GetHitResultUnderCursorByChannel but with a capsule trace instead of line trace */
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static bool GetCapsuleTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult);
-	static bool GetCapsuleTraceHitResultAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult);
+	static bool GetCapsuleTraceHitResultAtScreenPosition(APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, FHitResult& HitResult);
 
 	UFUNCTION(BlueprintCallable, Category = "Utility")
 	static bool GetCapsuleMultiTraceHitResultUnderCursorByChannel(APlayerController* PlayerController, ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<FHitResult>& OutHits, bool DrawDebug);
-	static bool GetCapsuleMultiTraceHitResultsAtScreenPosition(const APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<FHitResult>& OutHits, bool
+	static bool GetCapsuleMultiTraceHitResultsAtScreenPosition(APlayerController* PlayerController, const FVector2D ScreenPosition, const ECollisionChannel TraceChannel, float TraceRadius, bool bTraceComplex, TArray<FHitResult>& OutHits, bool
 	                                                           DebugDraw);
 
 	// Creates a floating text message at the specified location. uses a custom K2 node, see RancEditorUtilities/K2NodeCreationHelper.h for details

@@ -1,4 +1,5 @@
 ﻿#include "TimelineObject.h"
+#include "Curves/CurveFloat.h"
 
 constexpr float S = 1.70158f;
 
