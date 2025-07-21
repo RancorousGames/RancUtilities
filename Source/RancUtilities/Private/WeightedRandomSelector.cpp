@@ -10,7 +10,17 @@ UObject* UWeightedRandomSelector::SelectRandomWeightedItem(const TArray<FSWeight
 		TotalWeight += Item.Weight;
 	}
 
-	float RandomWeight = FMath::RandRange(0.f, TotalWeight);
+	if (TotalWeight <= 0.f)
+	{
+		if (Items.IsEmpty())
+		{
+			return nullptr;
+		}
+		// All weights are 0, return a random item with equal probability
+		return Items[FMath::RandRange(0, Items.Num() - 1)].Item;
+	}
+
+	const float RandomWeight = FMath::RandRange(0.f, TotalWeight);
 	float CurrentWeight = 0.f;
 
 	for (const FSWeightedItem& Item : Items)
@@ -22,35 +32,47 @@ UObject* UWeightedRandomSelector::SelectRandomWeightedItem(const TArray<FSWeight
 		}
 	}
 
-	return nullptr; // Return null if no item is selected (e.g., if Items is empty or all weights are zero)
+	return nullptr; // Return null if no item is selected (e.g., if Items is empty)
 }
 
 
 TScriptInterface<IWeightedItem> UWeightedRandomSelector::SelectRandomIWeightedItem(
-	TArray<TScriptInterface<IWeightedItem>> Items)
+	const TArray<TScriptInterface<IWeightedItem>>& Items)
 {
 	float TotalWeight = 0.f;
-	for (auto Item : Items)
+	// First loop: calculate total weight, iterating by const reference
+	for (const TScriptInterface<IWeightedItem>& Item : Items)
 	{
-		UObject* obj = Item.GetObject();
-		IWeightedItem* WeightedItem = (IWeightedItem*)obj;
-		if (!obj || !WeightedItem)
+		if (Item) // Check if the interface is valid
 		{
-			continue;
+			TotalWeight += IWeightedItem::Execute_GetWeight(Item.GetObject());
 		}
-
-		Item.SetInterface(WeightedItem);
-		TotalWeight += Item->Execute_GetWeight(obj);
 	}
+
+	// If total weight is 0, all items have an equal chance (or return null if empty)
+	if (TotalWeight <= 0.f)
+	{
+		if (Items.IsEmpty())
+		{
+			return nullptr;
+		}
+		// Pick a random one with equal probability
+		return Items[FMath::RandRange(0, Items.Num() - 1)];
+	}
+
 	const float RandomWeight = FMath::RandRange(0.f, TotalWeight);
 	float CurrentWeight = 0.f;
 
-	for (const TScriptInterface<IWeightedItem> Item : Items)
+	// Second loop: find the selected item, iterating by const reference
+	for (const TScriptInterface<IWeightedItem>& Item : Items) // This is the fix for the compiler error
 	{
-		CurrentWeight += Item->Execute_GetWeight(Item.GetObject());
-		if (CurrentWeight >= RandomWeight)
+		if (Item)
 		{
-			return Item;
+			CurrentWeight += IWeightedItem::Execute_GetWeight(Item.GetObject());
+			if (CurrentWeight >= RandomWeight)
+			{
+				return Item;
+			}
 		}
 	}
 
@@ -63,6 +85,15 @@ int UWeightedRandomSelector::SelectRandomItemIndex(const TArray<UObject*>& Items
 	for (int32 i = 0; i < Items.Num(); ++i)
 	{
 		TotalWeight += GetWeight.Execute(i);
+	}
+
+	if (TotalWeight <= 0.f)
+	{
+		if (Items.IsEmpty())
+		{
+			return INDEX_NONE;
+		}
+		return FMath::RandRange(0, Items.Num() - 1);
 	}
 
 	const float RandomWeight = FMath::RandRange(0.f, TotalWeight);
@@ -84,7 +115,7 @@ int UWeightedRandomSelector::SelectRandomWeightedIndex(const TArray<float>& Weig
 {
 	if (Weights.Num() == 0)
 	{
-		return 0;
+		return INDEX_NONE; 
 	}
 	
 	float TotalWeight = 0.f;
@@ -93,13 +124,14 @@ int UWeightedRandomSelector::SelectRandomWeightedIndex(const TArray<float>& Weig
 		TotalWeight += Weight;
 	}
 
-	const float RandomWeight = FMath::RandRange(0.f, TotalWeight);
-	float CurrentWeight = 0.f;
-
-	if (TotalWeight == 0.f)
+	// If all weights are zero, pick one with uniform probability
+	if (TotalWeight <= 0.f)
 	{
 		return FMath::RandRange(0, Weights.Num() - 1);
 	}
+	
+	const float RandomWeight = FMath::RandRange(0.f, TotalWeight);
+	float CurrentWeight = 0.f;
 	
 	for (int32 i = 0; i < Weights.Num(); ++i)
 	{
@@ -110,7 +142,7 @@ int UWeightedRandomSelector::SelectRandomWeightedIndex(const TArray<float>& Weig
 		}
 	}
 
-	return INDEX_NONE; // Return -1 (INDEX_NONE) if no index is selected (e.g., if Weights is empty or all weights are zero)
+	return INDEX_NONE;
 }
 
 int UWeightedRandomSelector::RollDice(int DiceCount, int DiceSides, bool bDiceHas0)

@@ -52,12 +52,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WeightedRandomSelector")
 	static UObject* SelectRandomWeightedItem(const TArray<FSWeightedItem>& Items);
 
-	// This does not compile, apparently because of some 
 	// Selects a random item from an array of IWeightedItem interface objects.
 	// @param Items - Array of IWeightedItem interface pointers.
 	// @return IWeightedItem* - The selected IWeightedItem interface pointer.
 	UFUNCTION(BlueprintCallable, Category = "WeightedRandomSelector")
-	static TScriptInterface<IWeightedItem> SelectRandomIWeightedItem(TArray<TScriptInterface<IWeightedItem>> Items);
+	static TScriptInterface<IWeightedItem> SelectRandomIWeightedItem(const TArray<TScriptInterface<IWeightedItem>>& Items);
 	
 	// Selects a random index from an array using a delegate to get weights.
 	// @param Items - Array of UObject items.
